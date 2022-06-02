@@ -1,9 +1,8 @@
-// C Program for  Tower of Hanoi
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
 #define STACK_BLOCK_SIZE 10
-// A structure to represent a stack
+
 typedef struct {
 	int * array;
 	int currentsize;
@@ -18,31 +17,33 @@ void move_disk(stack *rod1_stack, stack *rod2_stack, char s, char d);
 
 int main(){
 	int tsize, i;
-	char s = '1', d = '3', a = '2';
+	char s = '1', a = '2', d = '3';/*rods*/
 
 	printf ("Enter Tower size: ");
   scanf ("%d", &tsize);
 
-	stack *first, *third, *second;
+	stack *first, *third, *second;/*stacks*/
 
-	// Create three stacks of size 'tsize' to hold the disks
-	//first=init_return();
-  //second=init_return();
-  //third=init_return();
-  init(first);
-  init(second);
-  init(third);
-#include <limits.h>
-	//If number of disks is even, then interchange thirdination pole and secondiliary pole
+	/*create stacks STACK_BLOCK_SIZE size and controls if it is initilasiton*/
+	first=init_return();
+  second=init_return();
+  third=init_return();
+
+	/*if disk size is even number changes rods*/
 	if (tsize % 2 == 0){
 		d='2';
 		a='3';
 	}
 
-	//Larger disks will be pushed first
+	/*inserting disks in to first rod*/
 	for (i = tsize; i >= 1; i--)
 		push(first, i);
 
+
+	/*#################################################################################################################
+	# pow(2,tsize)-1=operation number. We must change disks between rods this time 																		#
+	# We do operations according to operation number because my algorithm is according to rods not according to disks	#
+	#################################################################################################################*/
 	for (i = 1; i <= (pow(2, tsize) - 1); i++){
 		int option=i % 3;
 		switch (option) {
@@ -56,40 +57,47 @@ int main(){
 	return 0;
 }
 
-// function to create a stack of given maxsize.
 stack * init_return(){
-	int i;
-  stack * rod = malloc (STACK_BLOCK_SIZE* sizeof(int));
-  rod->array = malloc (STACK_BLOCK_SIZE* sizeof(int));
+	int i,cont;
+  stack * rod = malloc (sizeof(int));/*reversing place for rod*/
+  rod->array = malloc (STACK_BLOCK_SIZE* sizeof(int));/*reversing place for rods array*/
 
-  for (i=0; i<STACK_BLOCK_SIZE; i++) rod->array[i] = 0;
-  rod->currentsize = -1;
-  rod->maxsize = STACK_BLOCK_SIZE;
+  for (i=0; i<STACK_BLOCK_SIZE; i++) rod->array[i] = 0;/*making array items 0*/
+  rod->currentsize = -1;/*we do currentsize -1 because we start before the disk when disk is inserted it comes to 'array[0]' */
+  rod->maxsize = STACK_BLOCK_SIZE;/*it is for start initilasize*/
 
+	cont=init(rod);
+	if (cont==-31) {/*if rod is not successfully initilasited*/
+		printf("Error! Stack can not be placed successfully. Please restart application.\n");
+	}
+	else{/*if rod is successfully initilasited*/
   return rod;
+	}
 }
 
-int init (stack * s) {
-  s = init_return ();
-  return 1;
+int init (stack *s) {
+  if (s==NULL) {/*if rod is not initilasiton returns -31 as a error code*/
+  	return -31;
+  }
+	return 1;
 }
 
-// Function to add an item to stack. It increases currentsize by 1
 void push(stack *stack, int item){
-	if ((stack->currentsize == stack->maxsize - 1)) return;
-	stack -> array[++stack -> currentsize] = item;
+	if (stack->currentsize == stack->maxsize - 1) return;/*if the rod is full returns*/
+	stack -> array[++stack -> currentsize] = item;/*if rod is not full insert the disk in to rod*/
 }
 
-// Function to remove an item from stack. It decreases currentsize by 1
 int pop(stack* stack){
-	if ((stack->currentsize == -1))	return -31;
-	return stack -> array[stack -> currentsize--];
+	int if_empty=stack->currentsize;
+	if (if_empty== -1)	return -31;/*if rod is empty returns -31 as a error code*/
+	return stack -> array[stack -> currentsize--];/*if rod is not empty pops the disk*/
 }
 
-// Function to implement legal movement between two poles
 void move_disk(stack *rod1_stack, stack *rod2_stack, char s, char d){
 	int rod1 = pop(rod1_stack);
 	int rod2 = pop(rod2_stack);
+
+	/*below if blocks are controls which rod has the bigger disk*/
 
 	// When pole 1 is empty
 	if (rod1 == -31)
